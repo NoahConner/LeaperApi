@@ -15,11 +15,22 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+Route::prefix('app')->group(function(){
+    Route::post('/otp',[AuthController::class,'otp']);
+    Route::post('/register',[AuthController::class,'register']);
+    Route::post('/login',[AuthController::class,'login']);
+    Route::post('/master',[AuthController::class,'otpValidate']);
+});
 
+// Auth Routes
 Route::middleware('auth:api')->prefix('admin')->group(function(){
     Route::get('/user', [UserController::class,'show']);
-    Route::post('/register',[AuthController::class,'register']);
     Route::post('/logout',[AuthController::class,'logout']);
+});
+
+// Current User
+Route::middleware('auth:api')->get('/me', function (Request $request) {
+    return $request->user();
 });
 
 // Route::middleware('auth:api')->get('/user', function (Request $request) {
