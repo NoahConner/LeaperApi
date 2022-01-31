@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePreUsersTable extends Migration
+class CreateDealsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,14 @@ class CreatePreUsersTable extends Migration
      */
     public function up()
     {
-        Schema::create('pre_users', function (Blueprint $table) {
+        Schema::create('deals', function (Blueprint $table) {
             $table->id();
-            $table->text('email');
-            $table->text('otp');
+            $table->integer('restaurent_id');
+            $table->string('deal_name');
+            $table->string('deal_price');
+            $table->string('deal_person_quantity');
+            $table->string('deal_quantity');
+            $table->string('deal_menu');
             $table->timestamps();
         });
     }
@@ -28,6 +32,6 @@ class CreatePreUsersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('pre_users');
+        Schema::dropIfExists('deals');
     }
 }
