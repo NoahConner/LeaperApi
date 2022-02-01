@@ -23,6 +23,7 @@ Route::prefix('app')->group(function(){
     Route::post('/login',[AuthController::class,'login']);
     Route::post('/restaurent_register',[AuthController::class,'otpValidate']);
     Route::get('/check-mail/{email}',[UserController::class,'checkUniqueMail']);
+    Route::post('/forgot_otp',[AuthController::class,'forgot_otp']);
 });
 
 // Auth Routes
