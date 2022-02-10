@@ -71,9 +71,9 @@ class RestaurentController extends Controller
     }
 
     public function showOne($id){
-        $rest = Restaurent::where('id',$id)->first();
+        $rest = Restaurent::where('user_id',$id)->with('deals')->with('user')->first();
         if(!empty($rest)){
-            $rest['restaurent'] = User::where('id', $rest->user_id)->first();
+            // $rest['restaurent'] = User::where('id', $rest->user_id)->first();
             return $rest;
         }else{
             return response()->json(['status'=>403, 'messsage' => 'Restaurent not found']);

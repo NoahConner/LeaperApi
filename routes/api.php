@@ -35,10 +35,12 @@ Route::middleware('auth:api')->prefix('admin')->group(function(){
     Route::post('/restaurent_register',[RestaurentController::class,'store']);
     Route::get('/restaurents/{cors}',[RestaurentController::class,'showAll']);
     Route::post('/restaurent_edit/{id}',[RestaurentController::class,'update']);
-    Route::get('/restaurents/{id}',[RestaurentController::class,'showOne']);
+    Route::get('/restaurents_id/{id}',[RestaurentController::class,'showOne']);
     Route::post('/deal_add',[DealsController::class,'store']);
     Route::get('/deals',[DealsController::class,'show']);
     Route::post('/deals_edit/{id}',[DealsController::class,'update']);
+    Route::post('/deals_delete/{id}',[DealsController::class,'destroy']);
+    Route::post('/image_upload',[AuthController::class,'uploadImage']);
 });
 
 // Current User

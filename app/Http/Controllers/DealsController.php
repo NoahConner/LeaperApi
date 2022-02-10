@@ -43,6 +43,7 @@ class DealsController extends Controller
             'deal_person_quantity' => 'required',
             'deal_quantity' => 'required',
             'deal_menu' => 'required',
+            'deal_image' => 'required',
         ]);
 
         if($validate->fails()){
@@ -57,7 +58,7 @@ class DealsController extends Controller
             $deals->deal_person_quantity = $request->deal_person_quantity;
             $deals->deal_quantity = $request->deal_quantity;
             $deals->deal_menu = $request->deal_menu;
-
+            $deals->deal_image = $request->deal_image;
             if($deals->save()){
                 return response()->json(['status'=>200, 'message'=>'deal added successfully.']);
             }
@@ -113,8 +114,13 @@ class DealsController extends Controller
      * @param  \App\Models\Deals  $deals
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Deals $deals)
+    public function destroy($id,Request $request, Deals $deals)
     {
-        //
+        try{
+            Deals::where('id', $id)->delete();
+            return response()->json(['message'=>'deal deleted'],200);
+        }catch(\Exception $e){
+            return response()->json(['message'=>$e], 404);
+        }
     }
 }

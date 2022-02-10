@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Http;
 use Laravel\Passport\Client;
 use App\Http\Controllers\RestaurentController;
 use App\Models\Restaurent;
+use Illuminate\Support\Facades\Storage;
 
 class AuthController extends Controller
 {
@@ -159,8 +160,13 @@ class AuthController extends Controller
         $v = Validator::make($request->all(),[
             'email' => 'required',
             'password' => 'required',
+            'type' => 'required'
         ]);
 
+        $userrD = User::where(['type'=>$request->type, 'email' => $request->email])->first();
+        if(empty($userrD)){
+            return response()->json(['message'=>'User not found'],403);
+        }
         $response = Http::post("http://localhost/laravel/Api/oauth/token",
             [
                 "grant_type" => 'password',
@@ -189,5 +195,24 @@ class AuthController extends Controller
         }else{
             return response()->json(['message'=>'otp invalid'], 403);
         }
+    }
+
+    public function uploadImage(Request $request)
+    {
+     $validator = Validator::make($request->all(), [
+        'image' => 'required|image:jpeg,png,jpg,gif,svg|max:2048'
+     ]);
+     if ($validator->fails()) {
+        return $validator->messages();
+     }
+     $uploadFolder = 'images';
+     $image = $request->file('image');
+     $image_uploaded_path = $image->store($uploadFolder, 'public');
+     $uploadedImageResponse = array(
+        "image_name" => basename($image_uploaded_path),
+        "image_url" => Storage::disk('public')->url($image_uploaded_path),
+        "mime" => $image->getClientMimeType()
+     );
+     return response()->json(['message'=>'File Uploaded Successfully','data'=>$uploadedImageResponse],200);
     }
 }
