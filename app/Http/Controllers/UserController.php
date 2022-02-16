@@ -16,7 +16,11 @@ class UserController extends Controller
     public function edit($id,Request $r){
         try {
             foreach ($r->all() as $key => $value) {
-                User::Where('id',$id)->update(([$key=>$value]));
+                if($key == 'password'){
+                    User::Where('id',$id)->update(([$key=>bcrypt($value)]));
+                }else{
+                    User::Where('id',$id)->update(([$key=>$value]));
+                }
             }
             return response()->json(['message'=>'user updated'], 200);
         } catch (\Exception $e) {

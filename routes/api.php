@@ -2,8 +2,11 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DealsController;
+use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\RestaurentController;
+use App\Http\Controllers\UserCardsController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\WalletController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -41,6 +44,12 @@ Route::middleware('auth:api')->prefix('admin')->group(function(){
     Route::post('/deals_edit/{id}',[DealsController::class,'update']);
     Route::post('/deals_delete/{id}',[DealsController::class,'destroy']);
     Route::post('/image_upload',[AuthController::class,'uploadImage']);
+    Route::post('/order',[OrdersController::class,'store']);
+    Route::post('/card_add',[UserCardsController::class,'store']);
+    Route::get('/cards/{id}',[UserCardsController::class,'show']);
+    Route::post('/cards_edit/{id}',[UserCardsController::class,'update']);
+    Route::get('/orders_by_id/{id}',[OrdersController::class,'showById']);
+    Route::post('/deposite',[WalletController::class,'create']);
 });
 
 // Current User
