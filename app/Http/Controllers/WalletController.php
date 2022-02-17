@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Wallet;
 use Illuminate\Http\Request;
+use App\Http\Controllers\CurrentWalletController;
 
 class WalletController extends Controller
 {
@@ -28,10 +29,11 @@ class WalletController extends Controller
             $wallet = new Wallet();
             $wallet->user_id = $r->user_id;
             $wallet->card_id = $r->card_id;
-            $wallet->amount = $r->amount;
+            $wallet->wallet = $r->amount;
 
             $wallet->save();
-            return response()->json(['status'=>200, 'messsage' => 'Deposit successfully'],200);
+            // return response()->json(['status'=>200, 'messsage' => 'Deposit successfully'],200);
+            return redirect()->action([CurrentWalletController::class, 'store'], [$wallet->amount]);
         }catch(\Exception $e){
             return response()->json(['status'=>'error','message'=>$e]);
         }

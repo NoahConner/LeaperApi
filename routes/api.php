@@ -7,6 +7,7 @@ use App\Http\Controllers\RestaurentController;
 use App\Http\Controllers\UserCardsController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WalletController;
+use App\Http\Controllers\CurrentWalletController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -50,6 +51,8 @@ Route::middleware('auth:api')->prefix('admin')->group(function(){
     Route::post('/cards_edit/{id}',[UserCardsController::class,'update']);
     Route::get('/orders_by_id/{id}',[OrdersController::class,'showById']);
     Route::post('/deposite',[WalletController::class,'create']);
+    Route::get('/orders_by_restaurant/{id}',[OrdersController::class,'showByRestaurant']);
+    Route::get('/wallet/{amount}',[CurrentWalletController::class,'store']);
 });
 
 // Current User

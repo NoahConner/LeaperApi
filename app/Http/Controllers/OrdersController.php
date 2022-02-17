@@ -110,4 +110,14 @@ class OrdersController extends Controller
             return response()->json(['status'=>'error', 'messsage' => $e->getMessage()]);
         }
     }
+
+    public function showByRestaurant($id){
+        $deal = Orders::with('deal')->get();
+            foreach ($deal as $key => $value) {
+                $rest = Restaurent::where('id',$value->deal->restaurent_id)->first();
+                $rest['user'] = User::where('id',$rest->user_id)->first();
+                $value['restaurent'] = $rest;
+            }
+        return $deal;
+    }
 }

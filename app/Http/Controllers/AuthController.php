@@ -89,7 +89,7 @@ class AuthController extends Controller
     }
 
     public function otpValidate(Request $request){
-        if($request->type == 'restaurent'){
+        if($request->type == 'restaurant'){
             $check_rest = User::where('email',$request->email)->first();
             if(empty($check_rest)){
                 try{
@@ -182,8 +182,8 @@ class AuthController extends Controller
 
     public function currentUserData(){
         $user = auth()->guard('api')->user();
-        if($user->type == 'restaurent'){
-            $user['restaurent'] = Restaurent::where('user_id',$user->id)->first();
+        if($user->type == 'restaurant'){
+            $user['restaurant'] = Restaurent::where('user_id',$user->id)->first();
         }
         return $user;
     }
