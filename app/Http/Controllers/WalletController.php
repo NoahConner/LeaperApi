@@ -30,6 +30,8 @@ class WalletController extends Controller
             $wallet->user_id = $r->user_id;
             $wallet->card_id = $r->card_id;
             $wallet->wallet = $r->amount;
+            $wallet->processing_fee = $r->processing_fee;
+
 
             $wallet->save();
             // return response()->json(['status'=>200, 'messsage' => 'Deposit successfully'],200);
@@ -58,7 +60,9 @@ class WalletController extends Controller
      */
     public function show(Wallet $wallet)
     {
-        //
+        $userRes = auth()->guard('api')->user();
+        $depositHistory = Wallet::where('user_id',$userRes->id)->with('card')->get();
+        return $depositHistory;
     }
 
     /**

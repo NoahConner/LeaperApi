@@ -65,7 +65,8 @@ class CurrentWalletController extends Controller
      */
     public function show(CurrentWallet $currentWallet)
     {
-        //
+        $userRes = auth()->guard('api')->user();
+        return CurrentWallet::where('user_id', $userRes->id)->first();
     }
 
     /**

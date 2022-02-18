@@ -18,6 +18,7 @@ class CreateWalletsTable extends Migration
             $table->string('user_id');
             $table->string('card_id');
             $table->integer('amount');
+            $table->integer('processing_fee');
             $table->timestamps();
         });
     }

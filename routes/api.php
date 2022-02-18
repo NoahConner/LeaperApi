@@ -53,6 +53,8 @@ Route::middleware('auth:api')->prefix('admin')->group(function(){
     Route::post('/deposite',[WalletController::class,'create']);
     Route::get('/orders_by_restaurant/{id}',[OrdersController::class,'showByRestaurant']);
     Route::get('/wallet/{amount}',[CurrentWalletController::class,'store']);
+    Route::get('/deposit_history',[WalletController::class,'show']);
+    Route::get('/current_wallet',[CurrentWalletController::class,'show']);
 });
 
 // Current User

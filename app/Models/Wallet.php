@@ -8,4 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class Wallet extends Model
 {
     use HasFactory;
+
+    public function card(){
+        return $this->belongsTo(UserCards::class, 'card_id');
+    }
 }
