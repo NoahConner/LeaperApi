@@ -16,4 +16,8 @@ class Restaurent extends Model
     {
         return $this->hasMany(Deals::class,'restaurent_id');
     }
+    public function deal()
+    {
+        return $this->belongsTo(Deals::class,'deal_id');
+    }
 }

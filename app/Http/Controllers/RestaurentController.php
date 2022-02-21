@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Deals;
+use App\Models\Orders;
 use App\Models\Restaurent;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -68,6 +70,20 @@ class RestaurentController extends Controller
             $users[$key]['distance_in_meters'] = round($radius*1000).' m';
         }
         return $users;
+    }
+
+     public function myRest(){
+        $user = auth()->guard('api')->user();
+        $deals = Restaurent::where('user_id', $user->id)->with('deals')->first();
+        $orders = Orders::with('deal')->get();
+        $allOr = array();
+        foreach ($orders as $key => $value) {
+            if($value->deal->restaurent_id == $deals->deals[0]->restaurent_id){
+                // unset($orders[$key]);
+                array_push($allOr, $value);
+            }
+        }
+        return $allOr;
     }
 
     public function showOne($id){

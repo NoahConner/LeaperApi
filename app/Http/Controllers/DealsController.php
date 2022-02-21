@@ -75,7 +75,8 @@ class DealsController extends Controller
      */
     public function show(Deals $deals)
     {
-        return Deals::all();
+        // return Deals::all();
+        return Deals::where('status', 1)->get();
     }
 
     /**
@@ -117,7 +118,8 @@ class DealsController extends Controller
     public function destroy($id,Request $request, Deals $deals)
     {
         try{
-            Deals::where('id', $id)->delete();
+            // Deals::where('id', $id)->delete();
+            Deals::where('id',$id)->update(['status' => 0]);
             return response()->json(['message'=>'deal deleted'],200);
         }catch(\Exception $e){
             return response()->json(['message'=>$e], 404);

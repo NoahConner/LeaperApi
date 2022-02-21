@@ -21,6 +21,7 @@ class CreateDealsTable extends Migration
             $table->string('deal_person_quantity');
             $table->string('deal_quantity');
             $table->string('deal_menu');
+            $table->string('status');
             $table->timestamps();
         });
     }

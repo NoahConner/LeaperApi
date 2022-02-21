@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CurrentWallet;
+use App\Models\Deals;
 use App\Models\Orders;
 use App\Models\Restaurent;
 use App\Models\User;
@@ -45,6 +47,22 @@ class OrdersController extends Controller
             $rest->leaper_dob = $request->leaper_dob;
             $rest->coupon = $request->coupon;
             $rest->save();
+
+            $wallAmount = CurrentWallet::where('user_id',$request->user_id)->first();
+
+            return $wallAmount;
+
+            $dealOn = Deals::where('id', $request->deal_id)->first();
+            $totalAm = $wallAmount->wallet - $dealOn->deal_price;
+            $dealQn = 0;
+            if($dealOn->deal_quantity > 0){
+                $dealQn =  $dealOn->deal_quantity - 1 ;
+            }
+            if($totalAm > 0){
+                CurrentWallet::where('user_id',$request->user_id)->update((['wallet' => $totalAm]));
+            }
+            Deals::where('id', $request->deal_id)->update((['deal_quantity'=> $dealQn]));
+
             return response()->json(['status'=>200, 'messsage' => 'Order created successfully'],200);
         } catch(\Exception $e){
             return response()->json(['status'=>'error', 'messsage' => $e->getMessage()]);
@@ -59,7 +77,8 @@ class OrdersController extends Controller
      */
     public function show(Orders $orders)
     {
-        //
+        // $userRes = auth()->guard('api')->user();
+        // Orders::where()
     }
 
     /**
@@ -119,5 +138,31 @@ class OrdersController extends Controller
                 $value['restaurent'] = $rest;
             }
         return $deal;
+    }
+
+
+    public function confirmOrder(Request $r){
+        $order = Orders::where('id', $r->order_id)->first();
+        if($order->status == 'pending'){
+            if($r->type == 'dob'){
+                if($r->code == $order->leaper_dob){
+                    Orders::where('id', $r->order_id)->update(['status' => 'withdraw']);
+                    return response()->json(['status'=>'success', 'messsage' => 'order withdraw successfully'], 200);
+                }else{
+                    return response()->json(['status'=>'error', 'messsage' => 'date of birth incorrect']);
+                }
+            }else if($r->type == 'coupon'){
+                if($r->code == $order->coupon){
+                    Orders::where('id', $r->order_id)->update(['status' => 'withdraw']);
+                    return response()->json(['status'=>'success', 'messsage' => 'order withdraw successfully'], 200);
+                }else{
+                    return response()->json(['status'=>'error', 'messsage' => 'coupon code incorrect']);
+                }
+            }else{
+                return response()->json(['status'=>'error', 'messsage' => 'type undefined']);
+            }
+        }else{
+            return response()->json(['status'=>'error', 'messsage' => 'order already '.$order->status], 403);
+        }
     }
 }
