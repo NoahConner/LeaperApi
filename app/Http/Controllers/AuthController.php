@@ -199,6 +199,7 @@ class AuthController extends Controller
 
     public function uploadImage(Request $request)
     {
+        return $request->all();
      $validator = Validator::make($request->all(), [
         'image' => 'required|image:jpeg,png,jpg,gif,svg|max:2048'
      ]);

@@ -50,8 +50,6 @@ class OrdersController extends Controller
 
             $wallAmount = CurrentWallet::where('user_id',$request->user_id)->first();
 
-            return $wallAmount;
-
             $dealOn = Deals::where('id', $request->deal_id)->first();
             $totalAm = $wallAmount->wallet - $dealOn->deal_price;
             $dealQn = 0;
